@@ -12,16 +12,20 @@ module.exports = {
       ProfileId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Profiles",
+          model: {
+            tableName: 'Profiles',
+          },
           key: 'id'
-        }
+        },
       },
       BookId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Books",
+          model: {
+            tableName: 'Books',
+          },
           key: 'id'
-        }
+        },
       },
       createdAt: {
         allowNull: false,

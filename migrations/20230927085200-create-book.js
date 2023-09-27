@@ -24,9 +24,11 @@ module.exports = {
       PublisherId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Publishers",
+          model: {
+            tableName: 'Publishers',
+          },
           key: 'id'
-        }
+        },
       },
       createdAt: {
         allowNull: false,
