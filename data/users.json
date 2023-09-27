@@ -1,0 +1,50 @@
+[
+    {
+      "username": "Mccarthy",
+      "email": "burksmccarthy@zilidium.com",
+      "password": "pariatur",
+      "role": "admin"
+    },
+    {
+      "username": "Roy",
+      "email": "burksroy@zilidium.com",
+      "password": "quis",
+      "role": "user"
+    },
+    {
+      "username": "Evans",
+      "email": "burksevans@zilidium.com",
+      "password": "culpa",
+      "role": "user"
+    },
+    {
+      "username": "Thompson",
+      "email": "burksthompson@zilidium.com",
+      "password": "tempor",
+      "role": "user"
+    },
+    {
+      "username": "Ware",
+      "email": "burksware@zilidium.com",
+      "password": "elit",
+      "role": "user"
+    },
+    {
+      "username": "Vega",
+      "email": "burksvega@zilidium.com",
+      "password": "dolor",
+      "role": "user"
+    },
+    {
+      "username": "Bryant",
+      "email": "burksbryant@zilidium.com",
+      "password": "incididunt",
+      "role": "user"
+    },
+    {
+      "username": "Church",
+      "email": "burkschurch@zilidium.com",
+      "password": "nostrud",
+      "role": "user"
+    }
+  ]
