@@ -15,11 +15,104 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Book.init({
-    title: DataTypes.STRING,
-    author: DataTypes.STRING,
-    imageUrl: DataTypes.STRING,
-    link: DataTypes.STRING,
-    PublisherId: DataTypes.INTEGER
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"Title is required"
+        },
+        notEmpty: {
+          args: true,
+          msg:"Title is required"
+        }
+      }
+    }, 
+    author: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"Author is required"
+        },
+        notEmpty: {
+          args: true,
+          msg:"Author is required"
+        }
+      }
+    }, 
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"Image URL is required"
+        },
+        notEmpty: {
+          args: true,
+          msg:"Image URL is required"
+        }
+      }
+    }, 
+    link: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"Link to shop is required"
+        },
+        notEmpty: {
+          args: true,
+          msg:"Link to shop is required"
+        }
+      }
+    }, 
+    PublisherId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"Publisher is required"
+        },
+        notEmpty: {
+          args: true,
+          msg:"Publisher is required"
+        }
+      }
+    }, 
+    isbn: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"ISBN is required"
+        },
+        notEmpty: {
+          args: true,
+          msg:"ISBN is required"
+        }
+      }
+    }, 
+    descriptions: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg:"Please give some descriptions to this book"
+        },
+        notEmpty: {
+          args: true,
+          msg:"Please give some descriptions to this book"
+        }
+      }
+    }, 
   }, {
     sequelize,
     modelName: 'Book',

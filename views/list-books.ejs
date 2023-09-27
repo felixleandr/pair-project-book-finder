@@ -6,6 +6,7 @@
     <title>List Books</title>
 </head>
 <body>
+    <%- include('nav.ejs') %>
     <h1>List Books</h1>
     <form action="/books" method="get">
         <input type="text" name="search" id="">
@@ -17,6 +18,8 @@
                 <td>Image</td>
                 <td>Title</td>
                 <td>Author</td>
+                <td>ISBN</td>
+                <td style="width: 400px;">Descriptions</td>
                 <td>Publisher</td>
                 <td>Link</td>
             </tr>
@@ -29,8 +32,14 @@
                     </td>
                     <td><%= el.title%></td>
                     <td><%= el.author%></td>
+                    <td><%= el.isbn%></td>
+                    <div style="max-width: 400px;">
+                        <td><%= el.descriptions%></td>
+                    </div>
                     <td><%= el.Publisher.name%></td>
-                    <td><%= el.link%></td>
+                    <td>
+                        <a href="<%= el.link%>" type="button">Buy</a>
+                    </td>
                 </tr>
             <% }) %>
         </tbody>

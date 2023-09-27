@@ -8,6 +8,8 @@ app.use(express.urlencoded({extended: true}))
 
 app.get('/', Controller.home)
 app.get('/books', Controller.listBooks)
+app.get('/books/add', Controller.showFormAddBook)
+app.post('/books/add', Controller.addBook)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
