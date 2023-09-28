@@ -1,6 +1,7 @@
 const {User,Book, Publisher} = require('../models')
 const {Op} = require('sequelize')
 const { sendRegistrationEmail } = require('../mailer');
+const timestamp = require('../helpers/timestamp')
 
 class Controller {
     static registerPage(req, res){
@@ -73,28 +74,28 @@ class Controller {
                 }
             }
         }
-        let result = ''
-
+        
         if(PublisherId){
-            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId)
+            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId, timestamp)
         }
-
+        
         if(search && PublisherId){
             options.where = {
                 title: {
                     [Op.iLike]: `%${search}%`
                 }
             }
-            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId)
+            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId, timestamp)
         }
-
+        
+        let result = ''
         Book.findAll(options)
         .then((data) => {
             result = data
             return Publisher.findAll()
         })
         .then((publishers) => {
-            res.render('list-books', {result, publishers})
+            res.render('list-books', {result, publishers, timestamp})
         })
         .catch((err) => {
             res.send(err)

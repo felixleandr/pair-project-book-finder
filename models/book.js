@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       options.where = {PublisherId}
       return Book.findAll({options})
     }
+
+    get caption(){
+      return `By ${this.author} - ISBN: ${this.isbn}`
+    }
   }
   Book.init({
     title: {
