@@ -1,6 +1,8 @@
 const {User,Book, Profile, Publisher,Favorite} = require('../models')
+
 const {Op} = require('sequelize')
 const { sendRegistrationEmail } = require('../mailer');
+const timestamp = require('../helpers/timestamp')
 
 class Controller {
     static registerPage(req, res){
@@ -67,10 +69,14 @@ class Controller {
     }
 
     static listBooks(req, res){
-        const {search} = req.query
+        const {search, PublisherId} = req.query
+        let showBookByPublisher = ''
 
         let options = {
-            include: Publisher
+            include: Publisher,
+            order: [
+                ["title","ASC"]
+            ]
         }
 
         if(search){
@@ -80,10 +86,28 @@ class Controller {
                 }
             }
         }
-
+        
+        if(PublisherId){
+            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId, timestamp)
+        }
+        
+        if(search && PublisherId){
+            options.where = {
+                title: {
+                    [Op.iLike]: `%${search}%`
+                }
+            }
+            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId, timestamp)
+        }
+        
+        let result = ''
         Book.findAll(options)
-        .then((result) => {
-            res.render('list-books', {result,userId: req.session.userId })
+        .then((data) => {
+            result = data
+            return Publisher.findAll()
+        })
+        .then((publishers) => {
+            res.render('list-books', {result, publishers, timestamp,userId: req.session.userId })
         })
         .catch((err) => {
             res.send(err)
@@ -120,8 +144,64 @@ class Controller {
             }
         })
     }
+    static showFormEditBook(req, res){
+        const {errors} = req.query
+        const {id} = req.params
+        let result =''
+        Book.findOne({
+            include : Publisher
+        },{
+            where :{id}
+        })
+        .then((book) => {
+            result = book
+            return Publisher.findAll()
+        })
+        .then((publishers) => {
+            res.render('form-edit-books', {result, publishers, errors})
+        })
+        .catch((err) => {
+            res.send(err)
+        })
+    }
 
-    static addFavoriteBook(req, res) {
+    static updateBook(req, res) {
+        const {title, author, imageUrl, link, PublisherId, isbn, descriptions} = req.body
+        const {id} = req.params
+        Book.update({
+            title, author, imageUrl, link, PublisherId, isbn, descriptions
+        }, {
+            where: {id}
+        })
+        .then(() => {
+            res.redirect('/books')
+        })
+        .catch((err)=>{
+            if(err.name === "SequelizeValidationError"){
+                err = err.errors.map(el => {
+                    return el.message
+                })
+                res.redirect(`/books/${id}/edit?errors=${err.join(';')}`)
+            } else {
+                res.send(err)
+            }
+        })
+    }
+
+    static deleteBook(req, res){
+        const {id} = req.params
+
+        Book.destroy({
+            where: {id}
+        })
+        .then(() => {
+            res.redirect('/books')
+        })
+        .catch((err)=>{
+            res.send(err)
+        })
+    }
+static addFavoriteBook(req, res) {
         const { bookId } = req.params;
         const profileId = req.session.profileId; 
     
@@ -156,7 +236,6 @@ class Controller {
             res.send(err);
         });
     }
-    
 }
 
 module.exports = Controller

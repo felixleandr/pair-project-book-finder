@@ -1,9 +1,10 @@
 const express = require('express')
 const session = require('express-session');
 const app = express()
-const port = 7000
+const port = 3000
 require('dotenv').config();
 const Controller = require('./controllers/controllers')
+const ControllerProfile = require('./controllers/profiles')
 
 app.use(session({
   secret: 'Hactiv8',  
@@ -38,6 +39,11 @@ app.post('/login',Controller.loginLogic );
 
 app.get('/books/add', Controller.showFormAddBook)
 app.post('/books/add', Controller.addBook)
+app.get('/books/:id/edit', Controller.showFormEditBook)
+app.get('/books/:id/delete', Controller.deleteBook)
+app.post('books/:id/edit', Controller.updateBook)
+app.get('/:UserId/profile', ControllerProfile.showProfileById)
+
 
 app.get('/:userId', isAuthenticated, Controller.home);
 app.get('/:userId/books',isAuthenticated, Controller.listBooks)

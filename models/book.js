@@ -12,6 +12,16 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Book.belongsTo(models.Publisher)
+      Book.belongsToMany(models.Profile, {through: models.Favorite})
+    }
+
+    static getBooksByPublisher(options, PublisherId) {
+      options.where = {PublisherId}
+      return Book.findAll({options})
+    }
+
+    get caption(){
+      return `By ${this.author} - ISBN: ${this.isbn}`
     }
   }
   Book.init({

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        label{
+            font-weight: bold;
+        }
+        p{
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Profile</h1>
+    <div style="width: 500px;">
+        <div>
+            <label for="">Name</label>
+            <p><%= result.name%></p>
+        </div>
+        <div>
+            <label for="">Phone Number</label>
+            <p><%= result.phoneNumber%></p>
+        </div>
+        <div>
+            <label for="">Email</label>
+            <p><%= result.User.email%></p>
+        </div><br>
+
+        <div>
+            <label for="" style="font-size: 28px;">Favorites</label>
+        </div>
+    </div>
+</body>
+</html>
