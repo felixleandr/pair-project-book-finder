@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }, 
     PublisherId: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         notNull: {

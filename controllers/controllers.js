@@ -1,4 +1,5 @@
-const {User,Book, Publisher} = require('../models')
+const {User,Book, Profile, Publisher,Favorite} = require('../models')
+
 const {Op} = require('sequelize')
 const { sendRegistrationEmail } = require('../mailer');
 const timestamp = require('../helpers/timestamp')
@@ -12,6 +13,8 @@ class Controller {
     }
     static logicRegister(req, res){
         const { username, email, password , role} = req.body;
+        // console.log(req.body)
+        Profile.create
         User.create({
             username: username,
             email: email,
@@ -31,29 +34,38 @@ class Controller {
             }
         });
       }
-    static loginLogic(req, res){
+      static loginLogic(req, res){
         const { username, password } = req.body;
         User.findOne({ where: { username } })
         .then(user => {
             if (!user) {
-                throw new Error('User not found');
+                throw new Error('User not found')//////
             }
-            return user.isValidPassword(password);
+            const isMatch = user.isValidPassword(password);
+             return { user, isMatch };
         })
-        .then(isMatch => {
-            if (!isMatch) {
+        .then(result => {
+            if (result.isMatch !== true) {
                 throw new Error('Password is incorrect');
             }
-             req.session.isAuthenticated = true;
-            res.redirect('/');
+            req.session.isAuthenticated = true;
+            req.session.userId = result.user.id;
+            
+            return Profile.findOne({ where: { UserId: result.user.id } })
+            .then(profile => ({ user: result.user, profile }));
+        })
+        .then(data => {
+            req.session.profileId = data.profile.id;
+            res.redirect(`/${data.user.id}`);
         })
         .catch(err => {
             res.render('loginPage', { error: err.message });
             // console.log(err)
         });
-      }
+    }
+    
     static home(req, res){
-        res.render('home')
+        res.render('home',{ userId: req.session.userId })
     }
 
     static listBooks(req, res){
@@ -95,7 +107,7 @@ class Controller {
             return Publisher.findAll()
         })
         .then((publishers) => {
-            res.render('list-books', {result, publishers, timestamp})
+            res.render('list-books', {result, publishers, timestamp,userId: req.session.userId })
         })
         .catch((err) => {
             res.send(err)
@@ -132,7 +144,6 @@ class Controller {
             }
         })
     }
-
     static showFormEditBook(req, res){
         const {errors} = req.query
         const {id} = req.params
@@ -147,7 +158,7 @@ class Controller {
             return Publisher.findAll()
         })
         .then((publishers) => {
-            res.render('form-edit-books', {result, publishers, errors})
+            res.render('form-edit-books', {result, publishers, errors ,userId: req.session.userId})
         })
         .catch((err) => {
             res.send(err)
@@ -178,9 +189,17 @@ class Controller {
     }
 
     static deleteBook(req, res){
-        const {id} = req.params
+        const {userId,id} = req.params
+        let profileId = userId
 
         Book.destroy({
+            include: Favorite,
+            where: {
+                ProfileId : profileId,
+                BookId: id
+            }
+        },
+            {
             where: {id}
         })
         .then(() => {
@@ -189,6 +208,41 @@ class Controller {
         .catch((err)=>{
             res.send(err)
         })
+    }
+static addFavoriteBook(req, res) {
+        const { bookId } = req.params;
+        const profileId = req.session.profileId; 
+    
+        Favorite.create({
+            ProfileId: profileId,
+            BookId: bookId
+        })
+        .then(() => {
+            res.redirect(`/${req.params.userId}/books`);
+        })
+        .catch(err => {
+            console.error(err);
+            res.send(err);
+        });
+    }
+    
+    static removeFavoriteBook(req, res) {
+        const { bookId } = req.params;
+        const profileId = req.session.profileId;
+    
+        Favorite.destroy({
+            where: {
+                ProfileId: profileId,
+                BookId: bookId
+            }
+        })
+        .then(() => {
+            res.redirect('/profile/favorites');
+        })
+        .catch(err => {
+            console.error(err);
+            res.send(err);
+        });
     }
 }
 

@@ -15,11 +15,18 @@ app.use(session({
 
 function isAuthenticated(req, res, next) {
   if (req.session && req.session.isAuthenticated) {
-    next(); 
+      if (req.params.userId) {
+          if (req.session.userId != req.params.userId) {
+              return res.status(403).send('Unauthorized access');
+          }
+      }
+      next(); 
   } else {
-    res.redirect('/login');
+      res.redirect('/login');
   }
 }
+
+
 
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({extended: true}))
@@ -30,16 +37,18 @@ app.get('/login',Controller.loginPage );
 app.post('/login',Controller.loginLogic );
 
 
-app.get('/',isAuthenticated, Controller.home) // isauthenticated ini buat session nya jd klo mau masuk 
-//halaman ini harus login dulu, yang berari kita harus bikin button logut juga nanti, ini terapinnya nanti aja klo semua
-//pagenya udah selesai biar ga ribet harus login
-app.get('/books', Controller.listBooks)
-app.get('/books/add', Controller.showFormAddBook)
-app.post('/books/add', Controller.addBook)
-app.get('/books/:id/edit', Controller.showFormEditBook)
-app.get('/books/:id/delete', Controller.deleteBook)
-app.post('books/:id/edit', Controller.updateBook)
-app.get('/:UserId/profile', ControllerProfile.showProfileById)
+app.get('/:userId/books/add', Controller.showFormAddBook)
+app.post('/:userId/books/add', Controller.addBook)
+app.get('/:userId/profile', ControllerProfile.showProfileById)
+app.get('/:userId/books/:id/edit', Controller.showFormEditBook)
+app.get('/:userId/books/:id/delete', Controller.deleteBook)
+app.post('/:userId/books/:id/edit', Controller.updateBook)
+
+
+app.get('/:userId', isAuthenticated, Controller.home);
+app.get('/:userId/books',isAuthenticated, Controller.listBooks)
+app.post('/:userId/books/:bookId/favorite', isAuthenticated, Controller.addFavoriteBook);
+// app.delete('/books/:bookId/favorite', isAuthenticated, Controller.removeFavoriteBook);
 
 
 app.listen(port, () => {

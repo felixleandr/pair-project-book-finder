@@ -8,7 +8,6 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
-        
       },
       name: {
         type: Sequelize.STRING
@@ -19,11 +18,10 @@ module.exports = {
       UserId: {
         type: Sequelize.INTEGER,
         references: {
-          model: {
-            tableName: 'Users',
-          },
+          model: 'Users',
           key: 'id'
-        } 
+        },
+        allowNull: false
       },
       createdAt: {
         allowNull: false,

@@ -53,6 +53,13 @@ module.exports = (sequelize, DataTypes) => {
     hooks: {
       beforeCreate: (user) => {
         user.password = bcrypt.hashSync(user.password, 10); 
+      },
+      afterCreate: (user, options) => {
+        return sequelize.models.Profile.create({ 
+          name: user.username, 
+          phoneNumber: '', 
+          UserId: user.id  
+        });
       }
     }
   });
