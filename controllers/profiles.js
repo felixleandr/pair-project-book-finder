@@ -46,7 +46,6 @@ class ControllerProfile {
     }
     
     static removeFavoriteBook(req, res) {
-        console.log(req.params);
         const { bookId } = req.params;
         const profileId = req.session.profileId;
     

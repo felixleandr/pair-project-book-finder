@@ -190,7 +190,6 @@ class Controller {
     }
 
     static deleteBook(req, res){
-        console.log(req.params);
         const {userId,id} = req.params
         let profileId = userId
         Favorite.findOne({
@@ -215,7 +214,6 @@ class Controller {
             }
         })
         .then(() => {
-            console.log("ini ke destroy");
             res.redirect(`/${userId}/books`)
         })
         .catch((err)=>{
