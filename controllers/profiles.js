@@ -1,8 +1,8 @@
-const {Profile, User, Favorite, Book} = require('../models')
+const {Profile, User, Favorite, Book, Publisher} = require('../models')
 
 class ControllerProfile {
     static showProfileById(req, res) {
-        console.log(req.params, ">>>");
+        // console.log(req.params, ">>>");
         const {userId} = req.params
         let result = ''
         User.findOne({
@@ -12,26 +12,59 @@ class ControllerProfile {
             }
         }, {where: {id: userId}})
         .then((data) => {
-            console.log(data,"////");
             result = data
             return Favorite.findAll({
                 include: {
                     model: Book,
-                    where: {
-                        id
-                    }
+                    include: Publisher
                 }
-            })
+            },{where: {ProfileId:userId}})
         })
-        .then((books) => {
-            console.log(books);
-            res.render(`profile`, {result, books})
+        .then((favorites) => {
+            res.render(`profile`, {result, favorites, userId: req.session.userId})
         })
         .catch((err) => {
             res.send(err)
         })
     }
 
+    static addFavoriteBook(req, res) {
+        const { bookId } = req.params;
+        const profileId = req.session.profileId; 
+    
+        Favorite.create({
+            ProfileId: profileId,
+            BookId: bookId
+        })
+        .then(() => {
+            res.redirect(`/${req.params.userId}/books`);
+        })
+        .catch(err => {
+            console.error(err);
+            res.send(err);
+        });
+    }
+    
+    static removeFavoriteBook(req, res) {
+        console.log(req.params);
+        const { bookId } = req.params;
+        const profileId = req.session.profileId;
+    
+        Favorite.destroy({
+            where: {
+                ProfileId: profileId,
+                BookId: bookId
+            }
+        })
+        .then(() => {
+            res.redirect(`/${profileId}/profile`);
+        })
+        .catch(err => {
+            console.error(err);
+            res.send(err);
+        });
+    }
 }
+
 
 module.exports = ControllerProfile

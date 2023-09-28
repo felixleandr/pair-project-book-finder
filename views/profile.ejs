@@ -4,52 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
-    <style>
-        label{
-            font-weight: bold;
-        }
-        p{
-            background-color: lightgray;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </head>
 <body>
+    <%- include('nav.ejs') %>
     <h1>Profile</h1>
     <div style="width: 500px;">
         <div>
             <label for="">Name</label>
-            <p><%= result.name%></p>
+            <p style="background-color: lightgray;"><%= result.Profile.name%></p>
         </div>
         <div>
             <label for="">Phone Number</label>
-            <p><%= result.phoneNumber%></p>
+            <p style="background-color: lightgray;"><%= result.Profile.phoneNumber%></p>
         </div>
         <div>
             <label for="">Email</label>
-            <p><%= result.User.email%></p>
+            <p style="background-color: lightgray;"><%= result.email%></p>
         </div><br>
-
+    </div>
         <div>
             <label for="" style="font-size: 28px;">Favorites</label>
         </div>
         <div class="card-group row">
-            <% books.forEach(el => { %>
+            <% favorites.forEach(el => { %>
                 <div class="col-lg-3" style="margin: 10px 20px; ">
                 <div class="card">
-                    <img src="<%=el.imageUrl%>" class="card-img-top" alt="..." style="">
+                    <img src="<%=el.Book.imageUrl%>" class="card-img-top" alt="..." style="">
                     <div class="card-body" >
-                      <h5 class="card-title"><%=el.title%></h5>
-                      <p><%= el.caption %></p>
-                      <p>Published By <%=el.Publisher.name%></p>
-                      <p class="card-text"><%=el.descriptions%></p>
+                      <h5 class="card-title"><%=el.Book.title%></h5>
+                      <p><%= el.Book.caption %></p>
+                      <p>Published By <%=el.Book.Publisher.name%></p>
+                      <p class="card-text"><%=el.Book.descriptions%></p>
                       <div style="display: flex; gap: 10px;">
-                          <a href="/<%= userId %>/books/<%=el.id%>/remove" type="button">Remove</a>
+                          <a href="/<%= userId %>/profile/favorites/<%= el.BookId%>" type="button">Remove</a>
                       </div>
                     </div>
                 </div>
             </div> 
             <% }) %>
           </div>
-    </div>
 </body>
 </html>

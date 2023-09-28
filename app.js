@@ -41,13 +41,14 @@ app.post('/login',Controller.loginLogic );
 app.get('/:userId/books/add', Controller.showFormAddBook)
 app.post('/:userId/books/add', Controller.addBook)
 app.get('/:userId/profile', ControllerProfile.showProfileById)
+app.get('/:userId/profile/favorites/:bookId', ControllerProfile.removeFavoriteBook)
 app.get('/:userId/books/:id/edit', Controller.showFormEditBook)
 app.post('/:userId/books/:id/edit', Controller.updateBook)
 app.get('/:userId/books/:id/delete', Controller.deleteBook)
 
 app.get('/:userId', isAuthenticated, Controller.home);
 app.get('/:userId/books',isAuthenticated, Controller.listBooks)
-app.post('/:userId/books/:bookId/favorite', isAuthenticated, Controller.addFavoriteBook);
+app.post('/:userId/books/:bookId/favorite', isAuthenticated, ControllerProfile.addFavoriteBook);
 // app.delete('/books/:bookId/favorite', isAuthenticated, Controller.removeFavoriteBook);
 
 
