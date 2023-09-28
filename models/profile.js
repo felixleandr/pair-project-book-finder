@@ -19,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
     UserId: DataTypes.INTEGER,
     name: DataTypes.STRING,
     phoneNumber: DataTypes.STRING,
-    UserId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Profile',

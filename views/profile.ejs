@@ -32,6 +32,24 @@
         <div>
             <label for="" style="font-size: 28px;">Favorites</label>
         </div>
+        <div class="card-group row">
+            <% books.forEach(el => { %>
+                <div class="col-lg-3" style="margin: 10px 20px; ">
+                <div class="card">
+                    <img src="<%=el.imageUrl%>" class="card-img-top" alt="..." style="">
+                    <div class="card-body" >
+                      <h5 class="card-title"><%=el.title%></h5>
+                      <p><%= el.caption %></p>
+                      <p>Published By <%=el.Publisher.name%></p>
+                      <p class="card-text"><%=el.descriptions%></p>
+                      <div style="display: flex; gap: 10px;">
+                          <a href="/<%= userId %>/books/<%=el.id%>/remove" type="button">Remove</a>
+                      </div>
+                    </div>
+                </div>
+            </div> 
+            <% }) %>
+          </div>
     </div>
 </body>
 </html>

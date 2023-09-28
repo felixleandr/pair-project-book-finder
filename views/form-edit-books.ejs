@@ -12,14 +12,14 @@
 </head>
 <body>
     <%- include('nav.ejs') %>
-    <h1>Add a New Book</h1>
+    <h1>Edit Book</h1>
     <% if (errors) { %>
         <% errors.split(';').forEach(el => { %>
             <p style="color: red;"><%= el %></p>
         <% }) %>
     <% } %>
     <div style="max-width: 1240px; width: 100px;">
-        <form action="/books/<%=result.id%>/edit" method="post">
+        <form action="/<%=userId%>/books/<%=result.id%>/edit" method="post">
             <label for="">Title</label><br>
             <input type="text" name="title" id="" value="<%=result.title%>"><br>
     

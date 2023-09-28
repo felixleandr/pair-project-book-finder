@@ -1,6 +1,6 @@
 const {User,Book, Profile, Publisher,Favorite} = require('../models')
 
-const {Op} = require('sequelize')
+const {Op, where} = require('sequelize')
 const { sendRegistrationEmail } = require('../mailer');
 const timestamp = require('../helpers/timestamp')
 
@@ -36,13 +36,14 @@ class Controller {
       }
       static loginLogic(req, res){
         const { username, password } = req.body;
+        // console.log(password);
         User.findOne({ where: { username } })
         .then(user => {
             if (!user) {
                 throw new Error('User not found')//////
             }
             const isMatch = user.isValidPassword(password);
-             return { user, isMatch };
+            return { user, isMatch };
         })
         .then(result => {
             if (result.isMatch !== true) {
@@ -118,7 +119,7 @@ class Controller {
         const {errors} = req.query
         Publisher.findAll()
         .then((result) => {
-            res.render('form-add-books', {result, errors})
+            res.render('form-add-books', {result, errors, userId: req.session.userId })
         })
         .catch((err) => {
             res.send(err)
@@ -126,19 +127,20 @@ class Controller {
     }
 
     static addBook(req, res){
+        const {userId} = req.params
         const {title, author, imageUrl, link, PublisherId, isbn, descriptions} = req.body
         Book.create({
             title, author, imageUrl, link, PublisherId, isbn, descriptions 
         })
         .then(() => {
-            res.redirect('/books')
+            res.redirect(`/${userId}/books`)
         })
         .catch((err) => {
             if(err.name === "SequelizeValidationError"){
                 err = err.errors.map(el => {
                     return el.message
                 })
-                res.redirect(`/books/add?errors=${err.join(';')}`)
+                res.redirect(`/${userId}/books/add?errors=${err.join(';')}`)
             } else {
                 res.send(err)
             }
@@ -149,9 +151,8 @@ class Controller {
         const {id} = req.params
         let result =''
         Book.findOne({
-            include : Publisher
-        },{
-            where :{id}
+            include : Publisher,
+            where: {id}
         })
         .then((book) => {
             result = book
@@ -174,14 +175,14 @@ class Controller {
             where: {id}
         })
         .then(() => {
-            res.redirect('/books')
+            res.redirect(`/${req.params.userId}/books`)
         })
         .catch((err)=>{
             if(err.name === "SequelizeValidationError"){
                 err = err.errors.map(el => {
                     return el.message
                 })
-                res.redirect(`/books/${id}/edit?errors=${err.join(';')}`)
+                res.redirect(`/${userId}/books/${id}/edit?errors=${err.join(';')}`)
             } else {
                 res.send(err)
             }
@@ -191,19 +192,32 @@ class Controller {
     static deleteBook(req, res){
         const {userId,id} = req.params
         let profileId = userId
-
-        Book.destroy({
-            include: Favorite,
-            where: {
-                ProfileId : profileId,
+        Favorite.findOne({
+            where:{
+                ProfileId: profileId,
                 BookId: id
             }
-        },
-            {
-            where: {id}
+        })
+        // Book.destroy()
+        .then((result) => {
+            if(result){
+                return Book.destroy({
+                    include: {
+                        model: Favorite,
+                        where: {
+                            ProfileId: profileId,
+                            BookId:id
+                        }
+                    }
+                },{
+                    where: {id}
+                })
+            } else {
+                return Book.destroy({where: {id}})
+            }
         })
         .then(() => {
-            res.redirect('/books')
+            res.redirect(`/${userId}/books`)
         })
         .catch((err)=>{
             res.send(err)

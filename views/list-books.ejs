@@ -11,16 +11,16 @@
     <%- include('nav.ejs') %>
     <h1>List Books</h1>
     <button>
-        <a type="button" href="/books/add">Add Book</a>
+        <a type="button" href="/<%=userId%>/books/add">Add Book</a>
     </button>
-    <form action="/books" method="get">
+    <form action="/<%=userId%>/books" method="get">
         <div>
             <input type="text" name="search" id="">
             <button type="submit">Search</button>
         </div>
     </form>
 
-    <form action="/books" method="get">
+    <form action="/<%=userId%>/books" method="get">
         <div>
             <% let all = {name: 'All'} %>
             <% publishers.unshift(all)%>
