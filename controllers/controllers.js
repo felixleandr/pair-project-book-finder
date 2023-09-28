@@ -39,7 +39,7 @@ class Controller {
         User.findOne({ where: { username } })
         .then(user => {
             if (!user) {
-                throw new Error('User not found');
+                throw new Error('User not found')//////
             }
             const isMatch = user.isValidPassword(password);
              return { user, isMatch };
