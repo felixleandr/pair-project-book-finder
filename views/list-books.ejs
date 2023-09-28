@@ -42,11 +42,13 @@
                   <p class="card-text"><%=el.descriptions%></p>
                   <div style="display: flex; gap: 10px;">
                     <a href="<%= el.link%>" type="button">Buy</a>
-                    <a href="/books/<%= el.id%>/edit" type="button">Edit</a>
+                    <a href="/<%= userId %>/books/<%= el.id %>/edit" type="button">Edit</a>
                   </div>
                   <div style="display: flex; gap: 10px;">
-                      <a href="" type="button">Add to Favorites</a>
-                      <a href="/books/<%=el.id%>/delete" type="button">Delete</a>
+                    <form action="/<%= userId %>/books/<%= el.id %>/favorite" method="post">
+                        <button type="submit">Add to Favorite</button>
+                    </form>
+                      <a href="/<%= userId %>/books/<%=el.id%>/delete" type="button">Delete</a>
                   </div>
                   <p style="color: rgb(174, 173, 173);">Uploaded on <%= el.createdAt = timestamp(el.createdAt)%></p>
                 </div>

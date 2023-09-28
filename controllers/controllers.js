@@ -45,7 +45,7 @@ class Controller {
              return { user, isMatch };
         })
         .then(result => {
-            if (!result.isMatch) {
+            if (result.isMatch !== true) {
                 throw new Error('Password is incorrect');
             }
             req.session.isAuthenticated = true;
@@ -158,7 +158,7 @@ class Controller {
             return Publisher.findAll()
         })
         .then((publishers) => {
-            res.render('form-edit-books', {result, publishers, errors})
+            res.render('form-edit-books', {result, publishers, errors ,userId: req.session.userId})
         })
         .catch((err) => {
             res.send(err)
@@ -189,9 +189,17 @@ class Controller {
     }
 
     static deleteBook(req, res){
-        const {id} = req.params
+        const {userId,id} = req.params
+        let profileId = userId
 
         Book.destroy({
+            include: Favorite,
+            where: {
+                ProfileId : profileId,
+                BookId: id
+            }
+        },
+            {
             where: {id}
         })
         .then(() => {
