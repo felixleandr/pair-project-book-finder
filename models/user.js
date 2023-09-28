@@ -30,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING,
       allowNull: false,  
-      set(value) {
-        const hash = bcrypt.hashSync(value, 10);  
-        this.setDataValue('password', hash);
-      }
+      // set(value) {
+      //   const hash = bcrypt.hashSync(value, 10);  
+      //   this.setDataValue('password', hash);
+      // }
     },
     email: {
       type: DataTypes.STRING,
@@ -50,11 +50,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
-    // hooks: {
-    //   beforeCreate: (user) => {
-    //     user.password = bcrypt.hashSync(user.password, 10); 
-    //   }
-    // }
+    hooks: {
+      beforeCreate: (user) => {
+        user.password = bcrypt.hashSync(user.password, 10); 
+      }
+    }
   });
   
   return User;

@@ -7,6 +7,16 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        type: Sequelize.INTEGER
+        
+      },
+      name: {
+        type: Sequelize.STRING
+      },
+      phoneNumber: {
+        type: Sequelize.STRING
+      },
+      UserId: {
         type: Sequelize.INTEGER,
         references: {
           model: {
@@ -14,12 +24,6 @@ module.exports = {
           },
           key: 'id'
         } 
-      },
-      name: {
-        type: Sequelize.STRING
-      },
-      phoneNumber: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

@@ -1,4 +1,4 @@
-const {User,Book, Profile, Publisher} = require('../models')
+const {User,Book, Publisher} = require('../models')
 const {Op} = require('sequelize')
 const { sendRegistrationEmail } = require('../mailer');
 
@@ -11,7 +11,6 @@ class Controller {
     }
     static logicRegister(req, res){
         const { username, email, password , role} = req.body;
-        console.log(req.body)
         User.create({
             username: username,
             email: email,
@@ -57,10 +56,14 @@ class Controller {
     }
 
     static listBooks(req, res){
-        const {search} = req.query
+        const {search, PublisherId} = req.query
+        let showBookByPublisher = ''
 
         let options = {
-            include: Publisher
+            include: Publisher,
+            order: [
+                ["title","ASC"]
+            ]
         }
 
         if(search){
@@ -70,10 +73,28 @@ class Controller {
                 }
             }
         }
+        let result = ''
+
+        if(PublisherId){
+            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId)
+        }
+
+        if(search && PublisherId){
+            options.where = {
+                title: {
+                    [Op.iLike]: `%${search}%`
+                }
+            }
+            showBookByPublisher = Book.getBooksByPublisher(options,PublisherId)
+        }
 
         Book.findAll(options)
-        .then((result) => {
-            res.render('list-books', {result})
+        .then((data) => {
+            result = data
+            return Publisher.findAll()
+        })
+        .then((publishers) => {
+            res.render('list-books', {result, publishers})
         })
         .catch((err) => {
             res.send(err)
@@ -108,6 +129,64 @@ class Controller {
             } else {
                 res.send(err)
             }
+        })
+    }
+
+    static showFormEditBook(req, res){
+        const {errors} = req.query
+        const {id} = req.params
+        let result =''
+        Book.findOne({
+            include : Publisher
+        },{
+            where :{id}
+        })
+        .then((book) => {
+            result = book
+            return Publisher.findAll()
+        })
+        .then((publishers) => {
+            res.render('form-edit-books', {result, publishers, errors})
+        })
+        .catch((err) => {
+            res.send(err)
+        })
+    }
+
+    static updateBook(req, res) {
+        const {title, author, imageUrl, link, PublisherId, isbn, descriptions} = req.body
+        const {id} = req.params
+        Book.update({
+            title, author, imageUrl, link, PublisherId, isbn, descriptions
+        }, {
+            where: {id}
+        })
+        .then(() => {
+            res.redirect('/books')
+        })
+        .catch((err)=>{
+            if(err.name === "SequelizeValidationError"){
+                err = err.errors.map(el => {
+                    return el.message
+                })
+                res.redirect(`/books/${id}/edit?errors=${err.join(';')}`)
+            } else {
+                res.send(err)
+            }
+        })
+    }
+
+    static deleteBook(req, res){
+        const {id} = req.params
+
+        Book.destroy({
+            where: {id}
+        })
+        .then(() => {
+            res.redirect('/books')
+        })
+        .catch((err)=>{
+            res.send(err)
         })
     }
 }

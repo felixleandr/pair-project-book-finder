@@ -8,9 +8,21 @@
 <body>
     <%- include('nav.ejs') %>
     <h1>List Books</h1>
+    <a type="button" href="/books/add">Add Book</a>
     <form action="/books" method="get">
-        <input type="text" name="search" id="">
-        <button type="submit">Search</button>
+        <div>
+            <input type="text" name="search" id="">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+    <form action="/books" method="get">
+        <div>
+            <% let all = {name: 'All'} %>
+            <% publishers.unshift(all)%>
+            <% publishers.forEach(el => { %>
+                <button name="PublisherId" value="<%= el.id%>" type="submit"><%= el.name %></button>
+            <% }) %>
+        </div>
     </form>
     <table>
         <thead>
@@ -28,7 +40,7 @@
             <% result.forEach(el => { %>
                 <tr>
                     <td>
-                        <img style="max-width: 200px;" src="<%=el.imageUrl%>" alt="">
+                        <img style="max-width: 200px;" src="<%=el.imageUrl%>" alt="image">
                     </td>
                     <td><%= el.title%></td>
                     <td><%= el.author%></td>
@@ -38,8 +50,14 @@
                     </div>
                     <td><%= el.Publisher.name%></td>
                     <td>
-                        <a href="<%= el.link%>" type="button">Buy</a>
+                        <div style="display: flex; flex-direction: column;">
+                            <a href="<%= el.link%>" type="button">Buy</a>
+                            <a href="/books/<%= el.id%>/edit" type="button">Edit</a>
+                            <a href="" type="button">Add to Favorites</a>
+                            <a href="/books/<%=el.id%>/delete" type="button">Delete</a>
+                        </div>
                     </td>
+                    
                 </tr>
             <% }) %>
         </tbody>
