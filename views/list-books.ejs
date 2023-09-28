@@ -22,6 +22,7 @@
                 <td style="width: 400px;">Descriptions</td>
                 <td>Publisher</td>
                 <td>Link</td>
+                <td>Action</td>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +40,11 @@
                     <td><%= el.Publisher.name%></td>
                     <td>
                         <a href="<%= el.link%>" type="button">Buy</a>
+                    </td>
+                    <td>
+                        <form action="/<%= userId %>/books/<%= el.id %>/favorite" method="post">
+                            <button type="submit">Add to Favorite</button>
+                        </form>
                     </td>
                 </tr>
             <% }) %>

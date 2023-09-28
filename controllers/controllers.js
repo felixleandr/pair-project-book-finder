@@ -1,4 +1,4 @@
-const {User,Book, Profile, Publisher} = require('../models')
+const {User,Book, Profile, Publisher,Favorite} = require('../models')
 const {Op} = require('sequelize')
 const { sendRegistrationEmail } = require('../mailer');
 
@@ -11,7 +11,8 @@ class Controller {
     }
     static logicRegister(req, res){
         const { username, email, password , role} = req.body;
-        console.log(req.body)
+        // console.log(req.body)
+        Profile.create
         User.create({
             username: username,
             email: email,
@@ -31,29 +32,38 @@ class Controller {
             }
         });
       }
-    static loginLogic(req, res){
+      static loginLogic(req, res){
         const { username, password } = req.body;
         User.findOne({ where: { username } })
         .then(user => {
             if (!user) {
                 throw new Error('User not found');
             }
-            return user.isValidPassword(password);
+            const isMatch = user.isValidPassword(password);
+             return { user, isMatch };
         })
-        .then(isMatch => {
-            if (!isMatch) {
+        .then(result => {
+            if (!result.isMatch) {
                 throw new Error('Password is incorrect');
             }
-             req.session.isAuthenticated = true;
-            res.redirect('/');
+            req.session.isAuthenticated = true;
+            req.session.userId = result.user.id;
+            
+            return Profile.findOne({ where: { UserId: result.user.id } })
+            .then(profile => ({ user: result.user, profile }));
+        })
+        .then(data => {
+            req.session.profileId = data.profile.id;
+            res.redirect(`/${data.user.id}`);
         })
         .catch(err => {
             res.render('loginPage', { error: err.message });
             // console.log(err)
         });
-      }
+    }
+    
     static home(req, res){
-        res.render('home')
+        res.render('home',{ userId: req.session.userId })
     }
 
     static listBooks(req, res){
@@ -73,7 +83,7 @@ class Controller {
 
         Book.findAll(options)
         .then((result) => {
-            res.render('list-books', {result})
+            res.render('list-books', {result,userId: req.session.userId })
         })
         .catch((err) => {
             res.send(err)
@@ -110,6 +120,43 @@ class Controller {
             }
         })
     }
+
+    static addFavoriteBook(req, res) {
+        const { bookId } = req.params;
+        const profileId = req.session.profileId; 
+    
+        Favorite.create({
+            ProfileId: profileId,
+            BookId: bookId
+        })
+        .then(() => {
+            res.redirect(`/${req.params.userId}/books`);
+        })
+        .catch(err => {
+            console.error(err);
+            res.send(err);
+        });
+    }
+    
+    static removeFavoriteBook(req, res) {
+        const { bookId } = req.params;
+        const profileId = req.session.profileId;
+    
+        Favorite.destroy({
+            where: {
+                ProfileId: profileId,
+                BookId: bookId
+            }
+        })
+        .then(() => {
+            res.redirect('/profile/favorites');
+        })
+        .catch(err => {
+            console.error(err);
+            res.send(err);
+        });
+    }
+    
 }
 
 module.exports = Controller
