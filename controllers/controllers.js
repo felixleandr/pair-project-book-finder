@@ -5,6 +5,10 @@ const { sendRegistrationEmail } = require('../mailer');
 const timestamp = require('../helpers/timestamp')
 
 class Controller {
+    static logoutLogic(req, res) {
+        req.session.destroy(); 
+        res.redirect('/login');
+      }
     static registerPage(req, res){
         res.render('registerPage');
       }
@@ -51,6 +55,7 @@ class Controller {
             }
             req.session.isAuthenticated = true;
             req.session.userId = result.user.id;
+            req.session.role = result.user.role;
             
             return Profile.findOne({ where: { UserId: result.user.id } })
             .then(profile => ({ user: result.user, profile }));
@@ -108,7 +113,7 @@ class Controller {
             return Publisher.findAll()
         })
         .then((publishers) => {
-            res.render('list-books', {result, publishers, timestamp,userId: req.session.userId })
+            res.render('list-books', {result, publishers, timestamp,userId: req.session.userId,role: req.session.role })
         })
         .catch((err) => {
             res.send(err)

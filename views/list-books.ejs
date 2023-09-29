@@ -17,9 +17,11 @@
     <%- include('nav.ejs') %>
     <div style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
         <h1>List Books</h1>
+        <% if (role === 'admin') { %>
         <button style="background-color: rgb(48, 132, 228);  border-radius: 4px; text-decoration: none;">
             <a style="color: white; text-decoration: none;" type="button" href="/<%=userId%>/books/add">Add Book</a>
         </button>
+        <% } %>
         <form action="/<%=userId%>/books" method="get" style="margin-top: 10px;">
             <div>
                 <input type="text" name="search" id="">
@@ -39,39 +41,36 @@
             </div>
         </form>
     </div>
-    <div style="display: flex; justify-content: center; align-items: center;">
-    <div class="card-group row" style="display: flex; justify-content: center;">
-        <% result.forEach(el => { %>
-            <div class="col-lg-3" style="margin: 10px 20px; ">
-            <div class="card">
-                <img src="<%=el.imageUrl%>" class="card-img-top" alt="..." style="">
-                <div class="card-body" >
-                  <h5 class="card-title"><%=el.title%></h5>
-                  <p><%= el.caption %></p>
-                  <p>Published By <%=el.Publisher.name%></p>
-                  <p class="card-text"><%=el.descriptions%></p>
-                  <div style="display: flex; gap: 10px;">
-                    <button>
-                        <a href="<%= el.link%>" type="button" style="text-decoration: none;">Buy</a>
-                    </button>
-                    <button>
-                        <a href="/<%= userId %>/books/<%= el.id %>/edit" type="button" style="text-decoration: none;">Edit</a>
-                    </button>
-                  </div>
-                  <div style="display: flex; gap: 10px;">
-                    <form action="/<%= userId %>/books/<%= el.id %>/favorite" method="post">
-                        <button type="submit">Add to Favorites</button>
-                    </form>
-                    <button style="text-decoration: none;" type="btn btn-danger">
-                        <a href="/<%= userId %>/books/<%=el.id%>/delete" type="btn btn-danger" style="text-decoration: none;">Delete</a>
-                    </button>
-                  </div>
-                  <p style="color: rgb(174, 173, 173);">Uploaded on <%= el.createdAt = timestamp(el.createdAt)%></p>
-                </div>
+    <div class="container mt-5">
+        <div class="card-group">
+            <div class="row justify-content-center">
+                <% result.forEach(el => { %>
+                    <div class="card col-lg-3" style="margin: 10px 20px">
+                        <img src="<%=el.imageUrl%>" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title"><%=el.title%></h5>
+                            <p><%= el.caption %></p>
+                            <p>Published By <%=el.Publisher.name%></p>
+                            <p class="card-text"><%=el.descriptions%></p>
+                            <div style="display: flex; gap: 10px;">
+                                <% if (role === 'admin') { %>
+                                    <a href="/<%= userId %>/books/<%= el.id %>/edit" style="text-decoration: none;">Edit</a>
+                                    <a href="/<%= userId %>/books/<%=el.id%>/delete" style="text-decoration: none;">Delete</a>
+                                <% } else { %>
+                                    <form action="/<%= userId %>/books/<%= el.id %>/favorite" method="post">
+                                        <button type="submit">Add to Favorites</button>
+                                    </form>
+                                    <a href="<%= el.link%>" style="text-decoration: none;">Buy</a>
+                                <% } %>
+                            </div>
+                            <p style="color: rgb(174, 173, 173);">Uploaded on <%= el.createdAt = timestamp(el.createdAt)%></p>
+                        </div>
+                    </div>
+                <% }) %>
             </div>
-        </div> 
-        <% }) %>
-      </div>
+        </div>
     </div>
+    
+    
 </body>
 </html>

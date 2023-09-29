@@ -2,31 +2,33 @@ const {Profile, User, Favorite, Book, Publisher} = require('../models')
 
 class ControllerProfile {
     static showProfileById(req, res) {
-        // console.log(req.params, ">>>");
-        const {userId} = req.params
-        let result = ''
+        const { userId } = req.params;
+        let result = '';
+    
         User.findOne({
             include: {
                 model: Profile,
-                where: {id: userId}
+                where: { id: userId }
             }
-        }, {where: {id: userId}})
-        .then((data) => {
-            result = data
-            return Favorite.findAll({
-                include: {
-                    model: Book,
-                    include: Publisher
-                }
-            },{where: {ProfileId:userId}})
-        })
-        .then((favorites) => {
-            res.render(`profile`, {result, favorites, userId: req.session.userId})
-        })
-        .catch((err) => {
-            res.send(err)
-        })
+        }, { where: { id: userId } })
+            .then((data) => {
+                result = data;
+                return Favorite.findAll({
+                    include: {
+                        model: Book,
+                        include: Publisher
+                    },
+                    where: { ProfileId: userId }
+                })
+            })
+            .then((favorites) => {
+                res.render(`profile`, { result, favorites, userId: req.session.userId })
+            })
+            .catch((err) => {
+                res.send(err)
+            })
     }
+    
 
     static addFavoriteBook(req, res) {
         const { bookId } = req.params;
